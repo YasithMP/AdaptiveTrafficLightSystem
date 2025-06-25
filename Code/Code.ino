@@ -45,7 +45,7 @@ void setup() {
   }
   pinMode(BUZZER, OUTPUT);
   digitalWrite(BUZZER, LOW);
-  Serial.println("\n🚦 Smart Traffic System Started\n");
+  Serial.println("\nSmart Traffic System Started\n");
 }
 
 void loop() {
@@ -59,7 +59,7 @@ void loop() {
       if (now - stateStartTime >= YELLOW_TIME) {
         state = GREEN;
         computeGreenTime(currentRoadIndex);
-        Serial.print("🟢 Road "); Serial.print(roads[currentRoadIndex].label);
+        Serial.print("Road "); Serial.print(roads[currentRoadIndex].label);
         Serial.print(" GREEN for "); Serial.print(greenDuration / 1000); Serial.println(" seconds");
         showGreen(currentRoadIndex);
         stateStartTime = now;
@@ -78,7 +78,7 @@ void loop() {
       if (now - stateStartTime >= YELLOW_TIME) {
         vehicleCount[currentRoadIndex] = 0;
         currentRoadIndex = (currentRoadIndex + 1) % 4;
-        Serial.print("\n🔄 Switching to Road "); Serial.println(roads[currentRoadIndex].label);
+        Serial.print("\nSwitching to Road "); Serial.println(roads[currentRoadIndex].label);
 
         if (currentRoadIndex == 0) printSummary();
 
@@ -96,14 +96,14 @@ void readVehicleCounts() {
       vehicleCount[i]++;
       detected[i] = true;
 
-      // === Log to Serial for Database ===
+      // Log to Serial for Database
       Serial.print("LOG,");
       Serial.print(millis()); Serial.print(",");
       Serial.print(roads[i].label); Serial.print(",");
       Serial.print("COUNT,");
       Serial.println(vehicleCount[i]);
 
-      Serial.print("🚗 Vehicle detected on Road "); Serial.print(roads[i].label);
+      Serial.print("Vehicle detected on Road "); Serial.print(roads[i].label);
       Serial.print(" | Count: "); Serial.println(vehicleCount[i]);
     } else if (d >= 15) {
       detected[i] = false;
@@ -127,7 +127,7 @@ void readVehicleSpeeds() {
       float speed = (scaledDistance / elapsed) * 3.6;
 
       if (speed < 500) {
-        // === Log to Serial for Database ===
+        // Log to Serial for Database
         Serial.print("LOG,");
         Serial.print(millis()); Serial.print(",");
         Serial.print(roads[i].label); Serial.print(",");
@@ -135,11 +135,11 @@ void readVehicleSpeeds() {
         Serial.print(speed); Serial.print(",");
         Serial.println((speed > SPEED_LIMIT) ? "OVER" : "OK");
 
-        Serial.print("🚙 Road "); Serial.print(roads[i].label);
+        Serial.print("Road "); Serial.print(roads[i].label);
         Serial.print(" | Speed: "); Serial.print(speed); Serial.println(" km/h");
 
         if (speed > SPEED_LIMIT) {
-          Serial.println("⚠️ Speeding detected! Buzzer ON.");
+          Serial.println("Speeding detected! Buzzer ON.");
           digitalWrite(BUZZER, HIGH);
           delay(1000);
           digitalWrite(BUZZER, LOW);
@@ -196,11 +196,9 @@ float getDistance(int trig, int echo) {
 }
 
 void printSummary() {
-  Serial.println("\n📊 Vehicle Count Summary:");
-  for (int i = 0; i < 4; i++) {
-    Serial.print("Road "); Serial.print(roads[i].label);
-    Serial.print(": "); Serial.print(vehicleCount[i]);
-    Serial.print(" | ");
-  }
-  Serial.println();
+  Serial.println("\nVehicle Count Summary:");
+  Serial.print("Road A: "); Serial.print(vehicleCount[0]); Serial.print(" | ");
+  Serial.print("Road B: "); Serial.print(vehicleCount[1]); Serial.print(" | ");
+  Serial.print("Road C: "); Serial.print(vehicleCount[2]); Serial.print(" | ");
+  Serial.print("Road D: "); Serial.print(vehicleCount[3]); Serial.println(" | ");
 }
