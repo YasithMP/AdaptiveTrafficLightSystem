@@ -76,11 +76,17 @@ void loop() {
 
     case PRE_RED_YELLOW:
       if (now - stateStartTime >= YELLOW_TIME) {
+        // Log this junction's vehicle count before resetting
+        Serial.print("LOG,");
+        Serial.print(millis()); Serial.print(",");
+        Serial.print(roads[currentRoadIndex].label); Serial.print(",");
+        Serial.print("COUNT,");
+        Serial.println(vehicleCount[currentRoadIndex]);
+
         vehicleCount[currentRoadIndex] = 0;
         currentRoadIndex = (currentRoadIndex + 1) % 4;
-        Serial.print("\nSwitching to Road "); Serial.println(roads[currentRoadIndex].label);
-
-        if (currentRoadIndex == 0) printSummary();
+        Serial.print("\nSwitching to Road ");
+        Serial.println(roads[currentRoadIndex].label);
 
         state = PRE_GREEN_YELLOW;
         stateStartTime = now;
@@ -95,13 +101,6 @@ void readVehicleCounts() {
     if (d > 0 && d < 15 && !detected[i]) {
       vehicleCount[i]++;
       detected[i] = true;
-
-      // Log to Serial for Database
-      Serial.print("LOG,");
-      Serial.print(millis()); Serial.print(",");
-      Serial.print(roads[i].label); Serial.print(",");
-      Serial.print("COUNT,");
-      Serial.println(vehicleCount[i]);
 
       Serial.print("Vehicle detected on Road "); Serial.print(roads[i].label);
       Serial.print(" | Count: "); Serial.println(vehicleCount[i]);
@@ -127,16 +126,12 @@ void readVehicleSpeeds() {
       float speed = (scaledDistance / elapsed) * 3.6;
 
       if (speed < 500) {
-        // Log to Serial for Database
         Serial.print("LOG,");
         Serial.print(millis()); Serial.print(",");
         Serial.print(roads[i].label); Serial.print(",");
         Serial.print("SPEED,");
         Serial.print(speed); Serial.print(",");
         Serial.println((speed > SPEED_LIMIT) ? "OVER" : "OK");
-
-        Serial.print("Road "); Serial.print(roads[i].label);
-        Serial.print(" | Speed: "); Serial.print(speed); Serial.println(" km/h");
 
         if (speed > SPEED_LIMIT) {
           Serial.println("Speeding detected! Buzzer ON.");
@@ -193,12 +188,4 @@ float getDistance(int trig, int echo) {
   digitalWrite(trig, LOW);
   long duration = pulseIn(echo, HIGH, 20000);
   return duration * 0.034 / 2.0;
-}
-
-void printSummary() {
-  Serial.println("\nVehicle Count Summary:");
-  Serial.print("Road A: "); Serial.print(vehicleCount[0]); Serial.print(" | ");
-  Serial.print("Road B: "); Serial.print(vehicleCount[1]); Serial.print(" | ");
-  Serial.print("Road C: "); Serial.print(vehicleCount[2]); Serial.print(" | ");
-  Serial.print("Road D: "); Serial.print(vehicleCount[3]); Serial.println(" | ");
 }
