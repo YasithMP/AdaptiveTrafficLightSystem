@@ -1,5 +1,3 @@
-// === Smart 4-Way Traffic System with Speed Detection, LED Control + Serial Logging ===
-
 #define BUZZER 52
 const float SPEED_SENSOR_DISTANCE = 0.1;  // 10 cm
 const float SPEED_LIMIT = 100.0;          // km/h
